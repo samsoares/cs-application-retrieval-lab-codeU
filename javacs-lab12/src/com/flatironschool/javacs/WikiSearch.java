@@ -60,8 +60,11 @@ public class WikiSearch {
 	 * @return New WikiSearch object.
 	 */
 	public WikiSearch or(WikiSearch that) {
-        // FILL THIS IN!
-		return null;
+        Map<String, Integer> orMap = new HashMap<String, Integer>(that.map); 
+        for (String url: this.map.keySet()){
+        	orMap.put(url, totalRelevance(this.getRelevance(url), that.getRelevance(url))); 
+        }
+		return new WikiSearch(orMap);
 	}
 	
 	/**
@@ -71,8 +74,15 @@ public class WikiSearch {
 	 * @return New WikiSearch object.
 	 */
 	public WikiSearch and(WikiSearch that) {
-        // FILL THIS IN!
-		return null;
+        Map<String, Integer> andMap = new HashMap<String, Integer>(); 
+        for (String urlKey: this.map.keySet()){
+        	Integer relevance = that.getRelevance(urlKey); 
+        	if (relevance > 0){
+        		andMap.put(urlKey, totalRelevance(this.getRelevance(urlKey), that.getRelevance(urlKey)));
+        	}
+        }
+        
+		return new WikiSearch(andMap);
 	}
 	
 	/**
@@ -82,8 +92,14 @@ public class WikiSearch {
 	 * @return New WikiSearch object.
 	 */
 	public WikiSearch minus(WikiSearch that) {
-        // FILL THIS IN!
-		return null;
+        Map<String, Integer> minusMap = new HashMap<String, Integer>(); 
+        for (String urlKey: this.map.keySet()){
+        	Integer relevance = that.getRelevance(urlKey); 
+        	if (relevance == 0){
+        		minusMap.put(urlKey, this.getRelevance(urlKey));
+        	}
+        }
+		return new WikiSearch(minusMap);
 	}
 	
 	/**
@@ -104,8 +120,18 @@ public class WikiSearch {
 	 * @return List of entries with URL and relevance.
 	 */
 	public List<Entry<String, Integer>> sort() {
-        // FILL THIS IN!
-		return null;
+        List<Entry<String, Integer>> entries = new LinkedList<Entry<String, Integer>>(); 
+        entries.addAll(map.entrySet()); 
+        
+        Collections.sort(entries, new Comparator<Entry<String,Integer>>() {
+        	
+			@Override
+			public int compare(Entry<String,Integer> e1, Entry<String,Integer> e2){
+				return e1.getValue() - e2.getValue();
+			}
+        });
+    	
+    	return entries;    
 	}
 
 	/**
